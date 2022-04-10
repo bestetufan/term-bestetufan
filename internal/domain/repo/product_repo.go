@@ -56,6 +56,13 @@ func (r *ProductRepository) GetBySKU(sku string) *entity.Product {
 	return &product
 }
 
+func (r *ProductRepository) Search(query string) []entity.Product {
+	var products []entity.Product
+	r.db.Preload("Category").Where("name LIKE ? OR sku LIKE ?", "%"+query+"%", "%"+query+"%").Find(&products)
+
+	return products
+}
+
 func (r *ProductRepository) Create(c *entity.Product) error {
 	result := r.db.Create(&c)
 

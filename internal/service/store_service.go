@@ -98,6 +98,14 @@ func (s *StoreService) GetProduct(productId uint32) *entity.Product {
 	return s.productRepo.GetById(productId)
 }
 
+func (s *StoreService) GetProductBySku(sku string) *entity.Product {
+	return s.productRepo.GetBySKU(sku)
+}
+
+func (s *StoreService) SearchProducts(query string) []entity.Product {
+	return s.productRepo.Search(query)
+}
+
 func (s *StoreService) CreateProduct(product *entity.Product) error {
 	productExists := s.productRepo.GetBySKU(product.Sku)
 	if productExists != nil {
@@ -105,6 +113,24 @@ func (s *StoreService) CreateProduct(product *entity.Product) error {
 	}
 
 	err := s.productRepo.Create(product)
+	if err != nil {
+		return errors.New("an unknown error occurred during operation")
+	}
+
+	return nil
+}
+
+func (s *StoreService) UpdateProduct(product *entity.Product) error {
+	err := s.productRepo.Update(product)
+	if err != nil {
+		return errors.New("an unknown error occurred during operation")
+	}
+
+	return nil
+}
+
+func (s *StoreService) DeleteProduct(productId uint32) error {
+	err := s.productRepo.DeleteById(productId)
 	if err != nil {
 		return errors.New("an unknown error occurred during operation")
 	}
@@ -209,8 +235,7 @@ func (s *StoreService) RemoveItemFromBasket(userName string, productId uint32) e
 }
 
 func (s *StoreService) GetAllOrders(userName string) []entity.Order {
-	items := s.orderRepo.GetAll(userName)
-	return items
+	return s.orderRepo.GetAll(userName)
 }
 
 func (s *StoreService) CreateOrder(userName string, name string, address string, phoneNumber string,

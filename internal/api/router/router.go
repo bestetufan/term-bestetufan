@@ -82,8 +82,10 @@ func NewRouter(handler *gin.Engine, l *logger.Logger, c *config.Config, db *gorm
 		{
 			p.GET("", product.GetAllProducts)
 			p.GET(":id", product.GetProduct)
+			p.GET("/search/:query", product.SearchProducts)
 			p.POST("", authMw.CheckRole("admin"), product.CreateProduct)
-			p.DELETE("", authMw.CheckRole("admin"), product.DeleteProduct)
+			p.PUT(":id", authMw.CheckRole("admin"), product.UpdateProduct)
+			p.DELETE(":id", authMw.CheckRole("admin"), product.DeleteProduct)
 		}
 		b := h.Group("/basket", authMw.ValidateToken())
 		{
