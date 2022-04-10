@@ -53,6 +53,7 @@ func (c *Auth) Register(g *gin.Context) {
 		return
 	}
 
+	// TODO: Password hash-salt functions (encrypted passwords in DB)
 	user := entity.NewUser(req.Email, req.Password, []*entity.Role{{Name: "customer"}})
 	err := c.userService.CreateUser(user)
 	if err != nil {
