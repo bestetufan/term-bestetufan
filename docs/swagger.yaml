@@ -1,0 +1,738 @@
+basePath: /api/v1
+definitions:
+  controller.authResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  controller.basketResponse:
+    properties:
+      id:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/entity.BasketItem'
+        type: array
+    type: object
+  controller.categoryResponse:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  controller.createCategoryRequest:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  controller.createProductRequest:
+    properties:
+      category_id:
+        type: integer
+      name:
+        type: string
+      quantity:
+        type: integer
+      sku:
+        type: string
+      unit_price:
+        type: number
+    required:
+    - category_id
+    - name
+    - quantity
+    - sku
+    - unit_price
+    type: object
+  controller.loginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  controller.newBasketItemRequest:
+    properties:
+      product_id:
+        type: integer
+      quantity:
+        type: integer
+    type: object
+  controller.newOrderRequest:
+    properties:
+      address:
+        type: string
+      card_cvv:
+        type: integer
+      card_exp:
+        type: string
+      card_number:
+        type: string
+      name:
+        type: string
+      phone_number:
+        type: string
+    required:
+    - address
+    - card_cvv
+    - card_exp
+    - card_number
+    - name
+    - phone_number
+    type: object
+  controller.orderResponse:
+    properties:
+      id:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/entity.OrderItem'
+        type: array
+    type: object
+  controller.productResponse:
+    properties:
+      category_id:
+        type: integer
+      category_name:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      quantity:
+        type: integer
+      sku:
+        type: string
+      unit_price:
+        type: number
+    type: object
+  controller.registerRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  controller.removeBasketItemRequest:
+    properties:
+      product_id:
+        type: integer
+    type: object
+  controller.response:
+    properties:
+      message:
+        example: message
+        type: string
+    type: object
+  entity.BasketItem:
+    properties:
+      basket_id:
+        type: string
+      created_at:
+        type: string
+      product:
+        $ref: '#/definitions/entity.Product'
+      product_id:
+        type: integer
+      quantity:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  entity.Category:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      name:
+        type: string
+      products:
+        items:
+          $ref: '#/definitions/entity.Product'
+        type: array
+      updated_at:
+        type: string
+    type: object
+  entity.OrderItem:
+    properties:
+      created_at:
+        type: string
+      order_id:
+        type: string
+      product:
+        $ref: '#/definitions/entity.Product'
+      product_id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  entity.Product:
+    properties:
+      category:
+        $ref: '#/definitions/entity.Category'
+      category_id:
+        type: integer
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      quantity:
+        type: integer
+      sku:
+        type: string
+      unit_price:
+        type: number
+      updated_at:
+        type: string
+    type: object
+  pagination.Pages:
+    properties:
+      items: {}
+      page:
+        type: integer
+      pageCount:
+        type: integer
+      pageSize:
+        type: integer
+      totalCount:
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: An API for store management
+  title: Beste Tufan Store API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Returns a jwt token related to existing user account.
+      parameters:
+      - description: Login Model
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/controller.loginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.authResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controller.response'
+      tags:
+      - User
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user account and a JWT token.
+      parameters:
+      - description: Register Model
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/controller.registerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.authResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.response'
+      tags:
+      - User
+  /basket:
+    delete:
+      consumes:
+      - application/json
+      description: Removes an item from basket.
+      parameters:
+      - description: Remove Basket Item Model
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/controller.removeBasketItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.response'
+      security:
+      - Bearer: []
+      tags:
+      - Basket
+    get:
+      consumes:
+      - application/json
+      description: Returns user's basket.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.basketResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controller.response'
+      security:
+      - Bearer: []
+      tags:
+      - Basket
+    post:
+      consumes:
+      - application/json
+      description: Adds an item to basket.
+      parameters:
+      - description: New Basket Item Model
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/controller.newBasketItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.response'
+      security:
+      - Bearer: []
+      tags:
+      - Basket
+    put:
+      consumes:
+      - application/json
+      description: Updates an item in basket.
+      parameters:
+      - description: New Basket Item Model
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/controller.newBasketItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.response'
+      security:
+      - Bearer: []
+      tags:
+      - Basket
+  /category:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a category.
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      tags:
+      - Category
+    get:
+      consumes:
+      - application/json
+      description: Returns all categories with pagination.
+      parameters:
+      - description: Page Index
+        in: query
+        name: page
+        type: integer
+      - description: Page Size
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/pagination.Pages'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.response'
+      security:
+      - Bearer: []
+      tags:
+      - Category
+    post:
+      consumes:
+      - application/json
+      description: Creates a new category.
+      parameters:
+      - description: Create Category Model
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/controller.createCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.categoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.response'
+      security:
+      - Bearer: []
+      tags:
+      - Category
+  /category/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Returns one category by id.
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.categoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controller.response'
+      security:
+      - Bearer: []
+      tags:
+      - Category
+  /category/bulk:
+    post:
+      consumes:
+      - application/json
+      description: Creates new categories in bulk.
+      parameters:
+      - description: Category CSV
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      tags:
+      - Category
+  /order:
+    get:
+      consumes:
+      - application/json
+      description: Returns user's orders.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.orderResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controller.response'
+      security:
+      - Bearer: []
+      tags:
+      - Order
+    post:
+      consumes:
+      - application/json
+      description: Creates an order with basket items.
+      parameters:
+      - description: New Order Model
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/controller.newOrderRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.response'
+      security:
+      - Bearer: []
+      tags:
+      - Order
+  /order/{id}/cancel:
+    patch:
+      consumes:
+      - application/json
+      description: Cancels an order.
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.response'
+      security:
+      - Bearer: []
+      tags:
+      - Order
+  /product:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a product.
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      tags:
+      - Product
+    get:
+      consumes:
+      - application/json
+      description: Returns all products with pagination.
+      parameters:
+      - description: Page Index
+        in: query
+        name: page
+        type: integer
+      - description: Page Size
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/pagination.Pages'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.response'
+      security:
+      - Bearer: []
+      tags:
+      - Product
+    post:
+      consumes:
+      - application/json
+      description: Creates a new product.
+      parameters:
+      - description: Create Product Model
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/controller.createProductRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.productResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.response'
+      security:
+      - Bearer: []
+      tags:
+      - Product
+  /product/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Returns one product by id.
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.productResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controller.response'
+      security:
+      - Bearer: []
+      tags:
+      - Product
+securityDefinitions:
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
